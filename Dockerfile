@@ -15,3 +15,6 @@ RUN npm run build
 
 # Вказуємо команду для запуску додатку
 CMD ["npm", "start"]
+
+
+RUN chmod -R 755 /app
