@@ -11,7 +11,8 @@ COPY . /app
 RUN npm install
 
 # Запускаємо команду для збірки
-RUN npm run build
+RUN /bin/bash -c "npm run build"
+
 
 # Вказуємо команду для запуску додатку
 CMD ["npm", "start"]
