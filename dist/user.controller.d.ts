@@ -5,9 +5,9 @@ export declare class UserController {
     register(body: {
         username: string;
         password: string;
-    }): Promise<string | import("./user.entity").User>;
+    }): Promise<object>;
     login(body: {
         username: string;
         password: string;
-    }): Promise<string | import("./user.entity").User>;
+    }): Promise<object>;
 }

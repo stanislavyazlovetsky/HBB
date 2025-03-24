@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
+const config_1 = require("@nestjs/config");
 const user_entity_1 = require("./user.entity");
 const user_service_1 = require("./user.service");
 const user_controller_1 = require("./user.controller");
@@ -17,13 +18,13 @@ let AppModule = class AppModule {
 AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
+            config_1.ConfigModule.forRoot({
+                envFilePath: 'src/.env',
+                isGlobal: true,
+            }),
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
-                host: 'ep-aged-rice-a5tw080a.us-east-2.aws.neon.tech',
-                port: 5432,
-                username: 'healthband_owner',
-                password: 'mdGXwj3Ue2Ta',
-                database: 'healthband',
+                url: process.env.DATABASE_URL,
                 autoLoadEntities: true,
                 synchronize: false,
                 ssl: {

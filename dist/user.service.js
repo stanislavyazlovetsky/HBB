@@ -17,7 +17,8 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const user_entity_1 = require("./user.entity");
-const crypto_1 = require("crypto");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 let UserService = class UserService {
     constructor(userRepository) {
         this.userRepository = userRepository;
@@ -25,18 +26,34 @@ let UserService = class UserService {
     async register(username, password) {
         const existingUser = await this.userRepository.findOne({ where: { username } });
         if (existingUser) {
-            return 'User already exists';
+            return { message: 'User already exists' };
         }
-        const token = (0, crypto_1.randomBytes)(16).toString('hex');
-        const user = this.userRepository.create({ username, password, token });
-        return this.userRepository.save(user);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = this.userRepository.create({ username, password: hashedPassword });
+        const savedUser = await this.userRepository.save(newUser);
+        return {
+            id: savedUser.id,
+            username: savedUser.username,
+            created_at: savedUser.created_at,
+            message: 'User registered successfully',
+        };
     }
     async login(username, password) {
-        const user = await this.userRepository.findOne({ where: { username, password } });
+        const user = await this.userRepository.findOne({ where: { username } });
         if (!user) {
-            return 'Invalid credentials';
+            return { message: 'Invalid credentials' };
         }
-        return user;
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return { message: 'Invalid credentials' };
+        }
+        const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        return {
+            id: user.id,
+            username: user.username,
+            token,
+            created_at: user.created_at,
+        };
     }
 };
 UserService = __decorate([
