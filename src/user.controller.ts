@@ -16,6 +16,3 @@ export class UserController {
     return this.userService.login(body.username, body.password);
   }
 }
-
-
-// 1
